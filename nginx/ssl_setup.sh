@@ -4,7 +4,7 @@
 # by requesting a certificate from Lets Encrypt and then replacing
 # nginx.conf with nginx.ssl.conf, which is assumed to exist 
 
-DOMAIN_FLAGS="-d ark.frick.org"
+DOMAIN_FLAGS="-d pid.tbiadata.tw"
 EMAIL=saz310@nyu.edu
 
 certbot certonly --non-interactive --nginx --agree-tos --email $EMAIL $DOMAIN_FLAGS &&
