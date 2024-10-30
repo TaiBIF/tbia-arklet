@@ -34,7 +34,8 @@ services:
       - ./arklet:/app/arklet
       - static_volume:/app/static
     env_file:
-      - ./docker/env.prod
+      # - ./docker/env.prod
+      - .env
     environment:
       ARKLET_PORT: "8017"
       # ARKLET_PORT: "8080"
@@ -55,7 +56,8 @@ services:
       - ./arklet:/app/arklet
       - static_volume:/app/static
     env_file:
-      - ./docker/env.prod
+      # - ./docker/env.prod
+      - .env
     environment:
       # ARKLET_PORT: "8000"
       ARKLET_PORT: "8018"
@@ -79,4 +81,5 @@ services:
       - static_volume:/app/static
 
 volumes:
+  postgres:
   static_volume:
