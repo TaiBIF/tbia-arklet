@@ -54,7 +54,7 @@ SECRET_KEY = env.str("ARKLET_DJANGO_SECRET_KEY")  # Intentionally no default val
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("ARKLET_DEBUG")
 
-ALLOWED_HOSTS = env.str("ARKLET_HOST")
+ALLOWED_HOSTS = [env.str("ARKLET_HOST")]
 
 CSRF_TRUSTED_ORIGINS = [
     f"http://*.127.0.0.1",
