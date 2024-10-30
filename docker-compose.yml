@@ -4,15 +4,25 @@ services:
   postgres:
     container_name: arklet_db
     image: postgres:14-alpine
-    env_file:
-      - ./docker/env.local
+    # env_file:
+    #   # - ./docker/env.local
+    #   - .env
     volumes:
       - postgres:/var/lib/postgresql/data
     restart: always
     ports:
-      - "5432:5432"
+      - "5435:5432"
+      # - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=arklet
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=postgres
+      - PGDATA=/var/lib/postgresql/data/pgdata
 
   arklet-minter:
+    platform: linux/amd64
     container_name: arklet_minter
     restart: always
     build:
@@ -25,13 +35,17 @@ services:
       - ./ark_import:/app/ark_import
       - ./arklet:/app/arklet
     env_file:
-      - ./docker/env.local
+      # - ./docker/env.local
+      - .env
     environment:
-      ARKLET_PORT: "8001"
+      ARKLET_PORT: "8017"
+      # ARKLET_PORT: "8001"
     ports:
-      - "8001:8001"
+      - "8017:8017"
+      # - "8001:8001"
 
   arklet-resolver:
+    platform: linux/amd64
     container_name: arklet_resolver
     restart: always
     build:
@@ -44,12 +58,15 @@ services:
       - ./ark_import:/app/ark_import
       - ./arklet:/app/arklet
     env_file:
-      - ./docker/env.local
+      # - ./docker/env.local
+      - .env
     environment:
-      ARKLET_PORT: "8000"
+      # ARKLET_PORT: "8000"
+      ARKLET_PORT: "8018"
       RESOLVER: "true"
     ports:
-      - "8000:8000"
+      - "8018:8018"
+      # - "8000:8000"
 
 volumes:
   postgres:

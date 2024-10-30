@@ -18,7 +18,7 @@ from django.http import (
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 
-from ark.forms import MintArkForm, UpdateArkForm
+from ark.forms import MintArkForm, UpdateArkForm, InsertArkForm
 from ark.models import Ark, Naan, Key, Shoulder
 from ark.utils import parse_ark, gen_prefixes, parse_ark_lookup
 
@@ -139,6 +139,7 @@ def resolve_ark(request, ark: str):
 
     ark_str = f"{naan}/{identifier}"
     ark_obj = Ark.objects.filter(ark=ark_str).first()
+
     if ark_obj:
         if info_inflection:
             return view_ark(request, ark_obj)
@@ -331,3 +332,43 @@ def status(request):
         'service': service,
         'status': 'ok!',
     })
+
+
+# WIP
+@csrf_exempt
+def insert_ark(request):
+
+    if request.method != "POST":
+        return HttpResponseNotAllowed(permitted_methods=["POST"])
+
+    try:
+        unsafe_update_request = request.POST
+    except (json.JSONDecodeError, TypeError) as e:
+        return HttpResponseBadRequest(e)
+
+    update_request = InsertArkForm(unsafe_update_request)
+
+    if not update_request.is_valid():
+        return JsonResponse(update_request.errors, status=400)
+
+    ark = update_request.cleaned_data.get("ark")
+    _, naan, assigned_name = parse_ark(ark)
+
+
+    authorized_naan = authorize(request, naan)
+    if authorized_naan is None:
+        return HttpResponseForbidden()
+
+    # 這邊要改成新增 ARK obj
+    shoulder = update_request.cleaned_data.pop("shoulder")
+    shoulder_obj = Shoulder.objects.filter(shoulder=shoulder).first()
+    if shoulder_obj is None:
+        return HttpResponseBadRequest(f"Shoulder {shoulder} does not exist")
+
+    ark_str = f"{naan}/{assigned_name}"
+    ark_obj = Ark.objects.create(ark=ark_str,
+                        naan=authorized_naan,
+                        shoulder=shoulder_obj,
+                        url=update_request.cleaned_data.pop("url"))
+
+    return JsonResponse(ark_to_json(ark_obj, metadata=False))

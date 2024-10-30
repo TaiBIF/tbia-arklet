@@ -13,29 +13,35 @@ https://docs.djangoproject.com/en/3.2/ref/settings/
 from pathlib import Path
 
 import environ
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 env = environ.Env(
     # set default values
-    ARKLET_HOST=(str, "127.0.0.1"),
-    ARKLET_DEBUG=(bool, False),
-    ARKLET_POSTGRES_NAME=(str, "arklet"),
-    ARKLET_POSTGRES_HOST=(str, "127.0.0.1"),
-    ARKLET_POSTGRES_PORT=(str, "5432"),
-    ARKLET_POSTGRES_USER=(str, "arklet"),
-    ARKLET_POSTGRES_PASSWORD=(str, "arklet"),
-    ARKLET_SENTRY_DSN=(str, ""),
-    ARKLET_SENTRY_TRANSACTIONS_PER_TRACE=(int, 1),
-    ARKLET_STATIC_ROOT=(str, "static"),
-    ARKLET_MEDIA_ROOT=(str, "media"),
+    # ARKLET_HOST=(str, "127.0.0.1"),
+    # ARKLET_DEBUG=(bool, False),
+    # ARKLET_POSTGRES_NAME=(str, "arklet"),
+    # ARKLET_POSTGRES_HOST=(str, "127.0.0.1"),
+    # ARKLET_POSTGRES_PORT=(str, "5432"),
+    # ARKLET_POSTGRES_USER=(str, "arklet"),
+    # ARKLET_POSTGRES_PASSWORD=(str, "arklet"),
+    # ARKLET_SENTRY_DSN=(str, ""),
+    # ARKLET_SENTRY_TRANSACTIONS_PER_TRACE=(int, 1),
+    # ARKLET_STATIC_ROOT=(str, "static"),
+    # ARKLET_MEDIA_ROOT=(str, "media"),
     RESOLVER=(bool, False),
-    ARKLET_NOID_LENGTH=(int, 8)
+    # ARKLET_NOID_LENGTH=(int, 8)
 )
+
+# print(os.listdir(BASE_DIR))
 
 # .env files are optional. django-environ will log an INFO message if no file is found
 # and arklet will continue to run assuming all required environment variables are set.
+env = environ.Env(DEBUG=(bool, False))
+# print('BASE_DIR', BASE_DIR)
+# env = environ.Env()
 environ.Env.read_env(BASE_DIR / ".env")
 
 
@@ -48,9 +54,7 @@ SECRET_KEY = env.str("ARKLET_DJANGO_SECRET_KEY")  # Intentionally no default val
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = env("ARKLET_DEBUG")
 
-ALLOWED_HOSTS = [
-    env("ARKLET_HOST"),
-]
+ALLOWED_HOSTS = env.list("ARKLET_HOST")
 
 CSRF_TRUSTED_ORIGINS = [
     f"http://*.127.0.0.1",

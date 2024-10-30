@@ -22,6 +22,7 @@ from ark import views
 minterpatterns = [
     path("mint", views.mint_ark, name="mint_ark"),
     path("update", views.update_ark, name="update_ark"),
+    path("insert", views.insert_ark, name="insert_ark"),
     path("bulk_query", views.batch_query_arks, name="bulk_query"),
     path("bulk_update", views.batch_update_arks, name="bulk_update"),
     path("bulk_mint", views.batch_mint_arks, name="bulk_mint"),

@@ -16,9 +16,11 @@ services:
     env_file:
       - ./docker/env.prod
     environment:
-      ARKLET_PORT: "8080"
+      ARKLET_PORT: "8017"
+      # ARKLET_PORT: "8080"
     expose:
-      - 8080
+      - 8017
+      # - 8080
 
   arklet-resolver:
     container_name: arklet_resolver
@@ -35,7 +37,8 @@ services:
     env_file:
       - ./docker/env.prod
     environment:
-      ARKLET_PORT: "8000"
+      # ARKLET_PORT: "8000"
+      ARKLET_PORT: "8018"
       RESOLVER: "true"
     expose:
       - 8000
@@ -47,7 +50,8 @@ services:
     ports:
       - 80:80
       - 443:443
-      - 8080:8080
+      # - 8080:8080
+      - 8017:8017
     depends_on:
       - arklet-minter
       - arklet-resolver

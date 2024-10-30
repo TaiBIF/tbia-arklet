@@ -49,5 +49,28 @@ class UpdateArkForm(forms.Form):
         for field_name in self.fields:
             if self.data.get(field_name) is None:
                 cleaned_data.pop(field_name, None)
+        return cleaned_data
+
+
+class InsertArkForm(forms.Form):
+    ark = forms.CharField(validators=[validate_ark])
+    url = forms.URLField(required=False)
+    shoulder = forms.CharField(validators=[validate_shoulder])
+    metadata = forms.CharField(required=False)
+    title = forms.CharField(required=False)
+    type = forms.CharField(required=False)
+    commitment = forms.CharField(required=False)
+    identifier = forms.CharField(required=False)
+    format = forms.CharField(required=False)
+    relation = forms.CharField(required=False)
+    source = forms.URLField(required=False)
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Remove fields that are not provided in the request
+        for field_name in self.fields:
+            if self.data.get(field_name) is None:
+                cleaned_data.pop(field_name, None)
 
         return cleaned_data
