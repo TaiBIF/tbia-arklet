@@ -24,6 +24,9 @@ services:
       - POSTGRES_PORT=5432
       - POSTGRES_HOST=postgres
       - PGDATA=/var/lib/postgresql/data/pgdata
+    networks:
+      # - internal
+      - gateway2
 
   arklet-minter:
     platform: linux/amd64
@@ -44,11 +47,14 @@ services:
     environment:
       ARKLET_PORT: "8017"
       # ARKLET_PORT: "8001"
-    expose:
-      - 8017
-      # ports:
-      #   - "8017:8017"
+      #expose:
+      #- 8017
+    ports:
+      - "8017:8017"
       # - "8001:8001"
+    networks:
+      # - internal
+      - gateway2
 
   arklet-resolver:
     platform: linux/amd64
@@ -70,10 +76,10 @@ services:
       # ARKLET_PORT: "8000"
       ARKLET_PORT: "8018"
       RESOLVER: "true"
-    expose:
-      - 8018
-    # ports:
-    #   - "8018:8018"
+        #expose:
+        #- 8018
+    ports:
+      - "8018:8018"
       # - "8000:8000"
     networks:
       # - internal
