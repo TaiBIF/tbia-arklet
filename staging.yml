@@ -5,14 +5,14 @@ networks:
     external: true
 
 services:
-  postgres:
+  postgres-arklet:
     container_name: arklet_db
     image: postgres:14-alpine
     volumes:
       - postgres:/var/lib/postgresql/data
     restart: always
     environment:
-      - POSTGRES_HOST=postgres
+      - POSTGRES_HOST=postgres-arklet
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_PORT=5432
@@ -65,13 +65,6 @@ services:
       - "127.0.0.1:8018:8018"
     networks:
       - gateway
-    # labels:  # redirecting http to https and defining routers and using tcl certresolver
-    #   - "traefik.enable=true"
-    #   - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
-    #   - "traefik.http.routers.arklet-resolver.entrypoints=web"
-    #   - "traefik.http.routers.arklet-resolver.rule=Host(`pid.tbiadata.tw`)"
-    #   - "traefik.http.routers.arklet-resolver.entrypoints=websecure"
-    #   - "traefik.http.routers.arklet-resolver.tls.certresolver=myresolver"
   nginx-arklet:  # nginx to serve static files
     image: nginx:latest
     container_name: nginx-arklet
