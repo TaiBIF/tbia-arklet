@@ -1,32 +1,25 @@
 version: "3.7"
 
 networks:
-  gateway2:
+  gateway:
     external: true
 
 services:
   postgres:
     container_name: arklet_db
     image: postgres:14-alpine
-    # env_file:
-    #   # - ./docker/env.local
-    #   - .env
     volumes:
       - postgres:/var/lib/postgresql/data
     restart: always
-    ports:
-      - "5435:5432"
-      # - "5432:5432"
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=arklet
-      - POSTGRES_PORT=5432
       - POSTGRES_HOST=postgres
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_PORT=5432
+      - POSTGRES_DB=${POSTGRES_DB}
       - PGDATA=/var/lib/postgresql/data/pgdata
     networks:
-      # - internal
-      - gateway2
+      - gateway
 
   arklet-minter:
     platform: linux/amd64
@@ -42,19 +35,13 @@ services:
       - ./ark_import:/app/ark_import
       - ./arklet:/app/arklet
     env_file:
-      # - ./docker/env.local
       - .env
     environment:
       ARKLET_PORT: "8017"
-      # ARKLET_PORT: "8001"
-      #expose:
-      #- 8017
     ports:
-      - "8017:8017"
-      # - "8001:8001"
+      - "127.0.0.1:8017:8017"
     networks:
-      # - internal
-      - gateway2
+      - gateway
 
   arklet-resolver:
     platform: linux/amd64
@@ -70,30 +57,21 @@ services:
       - ./ark_import:/app/ark_import
       - ./arklet:/app/arklet
     env_file:
-      # - ./docker/env.local
       - .env
     environment:
-      # ARKLET_PORT: "8000"
       ARKLET_PORT: "8018"
       RESOLVER: "true"
-        #expose:
-        #- 8018
     ports:
-      - "8018:8018"
-      # - "8000:8000"
+      - "127.0.0.1:8018:8018"
     networks:
-      # - internal
-      - gateway2
-    labels:  # redirecting http to https and defining routers and using tcl certresolver
-      - "traefik.enable=true"
-      # - "traefik.docker.network: gateway2"
-      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
-      - "traefik.http.routers.arklet-resolver.entrypoints=web"
-      # - "traefik.http.routers.admin.rule=Host(`mk.getalice.ai`)"
-      # - "traefik.http.routers.admin.middlewares=redirect-https@docker"
-      - "traefik.http.routers.arklet-resolver.rule=Host(`pid.tbiadata.tw`)"
-      - "traefik.http.routers.arklet-resolver.entrypoints=websecure"
-      - "traefik.http.routers.arklet-resolver.tls.certresolver=myresolver"
+      - gateway
+    # labels:  # redirecting http to https and defining routers and using tcl certresolver
+    #   - "traefik.enable=true"
+    #   - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+    #   - "traefik.http.routers.arklet-resolver.entrypoints=web"
+    #   - "traefik.http.routers.arklet-resolver.rule=Host(`pid.tbiadata.tw`)"
+    #   - "traefik.http.routers.arklet-resolver.entrypoints=websecure"
+    #   - "traefik.http.routers.arklet-resolver.tls.certresolver=myresolver"
   nginx-arklet:  # nginx to serve static files
     image: nginx:latest
     container_name: nginx-arklet
@@ -105,10 +83,11 @@ services:
     links:
       - arklet-resolver:arklet-resolver
     networks:
-      - gateway2
+      - gateway
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.nginx-arklet.rule=Host(`pid.tbiadata.tw`)"
+      - "traefik.http.middlewares.redirect-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.nginx-arklet.rule=Host(`pid.tbiadata.tw`) || Host(`minter.tbiadata.tw`)"
       - "traefik.http.routers.nginx-arklet.entrypoints=websecure"
       - "traefik.http.routers.nginx-arklet.tls.certresolver=myresolver"
 
